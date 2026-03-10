@@ -2,781 +2,340 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#1a3a5c">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>PÁDEL SCORE</title>
-<link rel="manifest" href="manifest.json">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0a0f1e">
+<title>AG Pádel · Mando</title>
 <style>
-:root {
-  --bg:       #f2f1ec;
-  --surface:  #ffffff;
-  --surface2: #eceae3;
-  --border:   #dddbd2;
-  --text:     #1c1c1e;
-  --text2:    #555557;
-  --text3:    #99999e;
-  --gold:     #c8a84b;
-  --navy:     #1a3a5c;
-  --green:    #2d6a4f;
-  --red:      #b94040;
-  --radius:   14px;
-  --radius-sm:8px;
-  --sh:       0 2px 12px rgba(0,0,0,.07);
-  --sh-lg:    0 6px 28px rgba(0,0,0,.12);
-  font-family: 'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif;
+:root{
+  --bg:#0a0f1e;--surface:#131d30;--border:rgba(255,255,255,0.08);
+  --text:#f1f5f9;--muted:#475569;--accent:#c9a84c;
+  --t1:#3b82f6;--t2:#ef4444;--green:#22c55e;
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;background:var(--bg);color:var(--text);}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:-apple-system,'SF Pro Display','Helvetica Neue',sans-serif;}
 
-/* ─── HEADER ─────────────────────────────────── */
-header{
-  background:var(--navy);
-  color:#fff;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:12px 18px;
-  position:sticky;top:0;z-index:200;
-  box-shadow:0 2px 12px rgba(0,0,0,.2);
-}
-.hd-brand{
-  font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;
-  opacity:.9;
-}
-.hd-pista{
-  font-size:12px;letter-spacing:1.5px;text-transform:uppercase;
-  background:rgba(255,255,255,.12);
-  padding:4px 12px;border-radius:20px;cursor:pointer;
-  border:1px solid rgba(255,255,255,.2);
-  transition:background .2s;
-}
-.hd-pista:hover{background:rgba(255,255,255,.22);}
-.hd-chrono{
-  font-size:14px;font-weight:700;letter-spacing:1px;
-  font-variant-numeric:tabular-nums;
-  background:rgba(255,255,255,.1);
-  padding:5px 12px;border-radius:20px;
-  min-width:70px;text-align:center;
-}
+.app{width:100vw;height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:env(safe-area-inset-top,12px) 16px env(safe-area-inset-bottom,16px);gap:10px;}
 
-/* ─── MAIN LAYOUT ────────────────────────────── */
-.main{max-width:480px;margin:0 auto;padding:14px 14px 80px;}
+/* STATUS BAR */
+.status{display:flex;align-items:center;justify-content:space-between;width:100%;padding-top:8px;}
+.status-left{display:flex;align-items:center;gap:6px;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--muted);}
+.dot.green{background:var(--green);box-shadow:0 0 8px var(--green);}
+.dot.red{background:var(--t2);}
+.dot.yellow{background:var(--accent);animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.status-txt{font-size:.58rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+.pista-sel{display:flex;gap:4px;}
+.ps-btn{background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:.65rem;font-weight:700;letter-spacing:1px;padding:4px 10px;cursor:pointer;transition:all .15s;}
+.ps-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(201,168,76,.1);}
 
-/* ─── MATCH STATUS ───────────────────────────── */
-#status-banner{
-  display:none;
-  background:var(--gold);color:#fff;
-  text-align:center;padding:10px 16px;
-  border-radius:var(--radius);
-  font-weight:800;font-size:13px;letter-spacing:2px;text-transform:uppercase;
-  box-shadow:var(--sh);margin-bottom:10px;
+/* SCORE DISPLAY */
+.score-display{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:16px;padding:14px 16px;width:100%;
+  display:flex;flex-direction:column;gap:6px;
 }
-#status-banner.show{display:block;}
+.score-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.score-name{font-size:.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.score-name.s1{color:var(--t1);}
+.score-name.s2{color:var(--t2);}
+.score-pts{font-size:1.6rem;font-weight:900;font-variant-numeric:tabular-nums;min-width:44px;text-align:right;}
+.score-pts.s1{color:var(--t1);}
+.score-pts.s2{color:var(--t2);}
+.score-sets{font-size:.7rem;font-weight:700;color:var(--muted);min-width:28px;text-align:right;}
+.score-games{font-size:.7rem;font-weight:700;color:var(--muted);min-width:28px;text-align:right;}
+.score-divider{height:1px;background:var(--border);}
+.score-meta{display:flex;align-items:center;justify-content:center;gap:10px;}
+.score-badge{font-size:.52rem;letter-spacing:2px;text-transform:uppercase;padding:3px 8px;border-radius:20px;font-weight:700;}
+.badge-tb{background:rgba(201,168,76,.15);color:var(--accent);}
+.badge-gold{background:rgba(201,168,76,.1);color:var(--accent);}
+.badge-adv{background:rgba(239,68,68,.1);color:var(--t2);}
+.score-serve{font-size:.52rem;letter-spacing:2px;text-transform:uppercase;color:var(--green);}
+.col-header{font-size:.42rem;letter-spacing:2px;text-transform:uppercase;color:#1e293b;text-align:right;}
+.score-header{display:grid;grid-template-columns:1fr 44px 28px 28px;align-items:center;gap:8px;}
+.score-grid{display:grid;grid-template-columns:1fr 44px 28px 28px;align-items:center;gap:8px;}
 
-/* ─── SCOREBOARD ─────────────────────────────── */
-.scoreboard{
-  background:var(--surface);border-radius:var(--radius);
-  box-shadow:var(--sh-lg);overflow:hidden;
-  border:1px solid var(--border);margin-bottom:12px;
-}
-.sb-header{
-  display:grid;grid-template-columns:1fr 52px 52px 64px;
-  padding:8px 14px;
-  background:var(--surface2);
-  border-bottom:1px solid var(--border);
-}
-.sb-header span{
-  font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
-  color:var(--text3);text-align:center;
-}
-.sb-header span:first-child{text-align:left;}
+/* ACTION BUTTONS */
+.action-area{display:flex;flex-direction:column;gap:10px;width:100%;}
+.main-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 
-.team-row{
-  display:grid;grid-template-columns:1fr 52px 52px 64px;
-  align-items:center;padding:14px 14px;
-  border-bottom:1px solid var(--border);
-  transition:background .15s;position:relative;
+.score-btn{
+  border:none;border-radius:16px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;padding:20px 10px;gap:4px;
+  transition:transform .08s, filter .08s;
+  -webkit-user-select:none;
+  min-height:120px;
 }
-.team-row:last-child{border-bottom:none;}
-.team-row.serving::before{
-  content:'';
-  position:absolute;left:0;top:0;bottom:0;
-  width:4px;background:var(--gold);
-  border-radius:0 2px 2px 0;
-}
-.team-name{
-  display:flex;align-items:center;gap:8px;
-  font-size:15px;font-weight:600;color:var(--text);
-}
-.serve-dot{
-  width:9px;height:9px;border-radius:50%;
-  background:var(--gold);flex-shrink:0;
-  box-shadow:0 0 6px rgba(200,168,75,.6);
-  display:none;
-}
-.team-row.serving .serve-dot{display:block;}
-.team-name-text{
-  cursor:pointer;border-bottom:1px dashed var(--border);
-  transition:color .2s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;
-}
-.team-name-text:hover{color:var(--navy);}
-.team-name input{
-  font-size:15px;font-weight:600;color:var(--text);
-  border:none;border-bottom:2px solid var(--navy);outline:none;
-  background:transparent;width:160px;
-}
+.score-btn:active{transform:scale(.93);filter:brightness(1.2);}
+.score-btn.b1{background:linear-gradient(150deg,#1d4ed8,#1e3a8a);border:1px solid rgba(147,197,253,.15);}
+.score-btn.b2{background:linear-gradient(150deg,#dc2626,#7f1d1d);border:1px solid rgba(252,165,165,.15);}
+.btn-label{font-size:.6rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);}
+.btn-name{font-size:.8rem;font-weight:800;letter-spacing:1px;color:#fff;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.btn-ico{font-size:1.8rem;line-height:1;}
 
-.score-cell{
-  text-align:center;font-weight:700;
-  font-variant-numeric:tabular-nums;
+.secondary-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.sec-btn{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:13px 10px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;cursor:pointer;transition:background .12s;
 }
-.pts{font-size:26px;color:var(--text);}
-.pts.leading{color:var(--navy);}
-.games{font-size:20px;color:var(--text2);}
-.sets-cell{
-  display:flex;gap:5px;justify-content:center;align-items:center;
-}
-.set-badge{
-  width:24px;height:24px;border-radius:6px;
-  background:var(--surface2);border:1px solid var(--border);
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:700;color:var(--text2);
-}
-.set-badge.won{background:var(--navy);color:#fff;border-color:var(--navy);}
+.sec-btn:active{background:#1e293b;}
+.sec-btn .ico{font-size:1.2rem;}
+.sec-btn .lbl{font-size:.5rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700;}
 
-/* ─── INFO ROW ───────────────────────────────── */
-.info-strip{
-  display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;
-}
-.badge{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:5px 12px;border-radius:20px;
-  font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
-}
-.badge-gold{background:rgba(200,168,75,.15);color:#9a7a20;border:1px solid rgba(200,168,75,.35);}
-.badge-tiebreak{background:rgba(185,64,64,.12);color:var(--red);border:1px solid rgba(185,64,64,.3);}
-.badge-adv{background:rgba(45,106,79,.12);color:var(--green);border:1px solid rgba(45,106,79,.3);}
-.badge-on{background:var(--navy);color:#fff;border:1px solid var(--navy);}
+/* FEEDBACK */
+.feedback{font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);text-align:center;min-height:1.2em;transition:color .2s;}
+.feedback.ok{color:var(--green);}
+.feedback.err{color:var(--t2);}
 
-/* ─── SET HISTORY ────────────────────────────── */
-.history-card{
-  background:var(--surface);border-radius:var(--radius);
-  border:1px solid var(--border);padding:12px 16px;
-  box-shadow:var(--sh);margin-bottom:12px;
-}
-.history-title{
-  font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
-  color:var(--text3);margin-bottom:8px;
-}
-.history-sets{display:flex;gap:8px;flex-wrap:wrap;}
-.hist-set{
-  display:flex;align-items:center;gap:6px;
-  background:var(--surface2);border:1px solid var(--border);
-  border-radius:8px;padding:6px 12px;
-  font-size:13px;font-weight:700;color:var(--text2);
-}
-.hist-set .set-num{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-right:4px;}
-.hist-set .scores{display:flex;align-items:center;gap:4px;}
-.hist-set .s-score{font-size:18px;color:var(--text);}
-.hist-set .s-score.won{color:var(--navy);font-weight:800;}
-.hist-set .sep{color:var(--text3);font-size:14px;}
-
-/* ─── CONTROLS ───────────────────────────────── */
-.controls{display:flex;flex-direction:column;gap:10px;}
-
-.score-buttons{
-  display:grid;grid-template-columns:1fr 1fr;gap:10px;
-}
-.btn-score{
-  background:var(--navy);color:#fff;
-  border:none;border-radius:var(--radius);
-  padding:20px 12px;
-  font-size:14px;font-weight:700;letter-spacing:.5px;
-  cursor:pointer;text-align:center;
-  box-shadow:var(--sh);
-  transition:background .15s, transform .1s, box-shadow .15s;
-  line-height:1.3;
-}
-.btn-score:active{transform:scale(.97);box-shadow:none;}
-.btn-score:hover{background:#1f4870;}
-.btn-score.teamB{background:var(--green);}
-.btn-score.teamB:hover{background:#336057;}
-.btn-score .btn-name{font-size:11px;opacity:.7;font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
-.btn-score .btn-plus{font-size:22px;font-weight:900;}
-
-.action-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
-.btn-action{
-  background:var(--surface);color:var(--text);
-  border:1.5px solid var(--border);border-radius:var(--radius-sm);
-  padding:13px 8px;font-size:12px;font-weight:700;
-  cursor:pointer;text-align:center;
-  box-shadow:var(--sh);
-  transition:all .15s;
-  letter-spacing:.3px;text-transform:uppercase;
-}
-.btn-action:active{transform:scale(.97);}
-.btn-action:hover{background:var(--surface2);border-color:#bbb;}
-.btn-action.danger{color:var(--red);border-color:rgba(185,64,64,.3);}
-.btn-action.danger:hover{background:rgba(185,64,64,.06);}
-
-.settings-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.btn-toggle{
-  background:var(--surface);border:1.5px solid var(--border);
-  border-radius:var(--radius-sm);padding:11px 14px;
-  display:flex;align-items:center;justify-content:space-between;
-  cursor:pointer;box-shadow:var(--sh);transition:all .15s;
-}
-.btn-toggle:hover{background:var(--surface2);}
-.btn-toggle .lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);}
-.toggle-pill{
-  width:36px;height:20px;border-radius:10px;
-  background:var(--border);position:relative;transition:background .2s;
-}
-.toggle-pill::after{
-  content:'';position:absolute;top:3px;left:3px;
-  width:14px;height:14px;border-radius:50%;
-  background:#fff;transition:transform .2s;
-  box-shadow:0 1px 3px rgba(0,0,0,.2);
-}
-.btn-toggle.on .toggle-pill{background:var(--navy);}
-.btn-toggle.on .toggle-pill::after{transform:translateX(16px);}
-
-/* ─── PISTA SELECTOR MODAL ───────────────────── */
-.modal-bg{
-  display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,.45);backdrop-filter:blur(4px);
-  z-index:500;align-items:flex-end;justify-content:center;
-}
-.modal-bg.open{display:flex;}
-.modal{
-  background:var(--surface);border-radius:var(--radius) var(--radius) 0 0;
-  padding:24px 20px 32px;width:100%;max-width:480px;
-  box-shadow:0 -4px 32px rgba(0,0,0,.15);
-}
-.modal h2{font-size:14px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--text2);margin-bottom:16px;}
-.modal-options{display:flex;flex-direction:column;gap:8px;}
-.modal-opt{
-  background:var(--surface2);border:1.5px solid var(--border);
-  border-radius:var(--radius-sm);padding:14px 18px;
-  cursor:pointer;font-size:14px;font-weight:600;
-  transition:all .15s;display:flex;align-items:center;justify-content:space-between;
-}
-.modal-opt:hover{border-color:var(--navy);color:var(--navy);}
-.modal-opt.active{background:var(--navy);color:#fff;border-color:var(--navy);}
-.modal-close{margin-top:14px;width:100%;padding:13px;border:none;border-radius:var(--radius-sm);background:var(--border);cursor:pointer;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;}
-
-/* ─── TOAST ──────────────────────────────────── */
-#toast{
-  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
-  background:var(--text);color:#fff;
-  padding:10px 20px;border-radius:20px;
-  font-size:12px;font-weight:700;letter-spacing:.5px;
-  opacity:0;transition:all .3s;pointer-events:none;z-index:999;
-  white-space:nowrap;
-}
-#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
-@media(min-width:520px){
-  .main{padding-top:20px;}
-  .btn-score{padding:24px 12px;}
-}
+/* SETUP */
+.setup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;}
+.setup-overlay.hidden{display:none;}
+.setup-box{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px;width:100%;max-width:320px;display:flex;flex-direction:column;gap:12px;}
+.setup-title{font-size:1.1rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;text-align:center;}
+.setup-sub{font-size:.72rem;color:var(--muted);text-align:center;line-height:1.5;}
+.setup-input{background:#0f172a;border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:.9rem;padding:10px 12px;outline:none;width:100%;font-family:monospace;letter-spacing:1px;}
+.setup-input:focus{border-color:var(--accent);}
+.setup-btn{background:var(--accent);border:none;color:#0f172a;font-size:.9rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:13px;border-radius:10px;cursor:pointer;width:100%;}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="hd-brand">Pádel Score</div>
-  <div class="hd-pista" id="pista-btn" onclick="openPistaModal()">Pista 1</div>
-  <div class="hd-chrono" id="chrono">00:00</div>
-</header>
-
-<div class="main">
-  <div id="status-banner"></div>
-
-  <!-- SCOREBOARD -->
-  <div class="scoreboard">
-    <div class="sb-header">
-      <span>Pareja</span>
-      <span>Pts</span>
-      <span>Jgs</span>
-      <span>Sets</span>
-    </div>
-    <div class="team-row" id="rowA">
-      <div class="team-name">
-        <div class="serve-dot"></div>
-        <span class="team-name-text" id="nameA-txt" onclick="editName('A')">Navarro / Sanz</span>
-        <input class="team-name-input" id="nameA-inp" style="display:none" onblur="saveName('A')" onkeydown="nameKey(event,'A')">
-      </div>
-      <div class="score-cell pts" id="ptsA">0</div>
-      <div class="score-cell games" id="gmsA">0</div>
-      <div class="sets-cell" id="setsA"></div>
-    </div>
-    <div class="team-row" id="rowB">
-      <div class="team-name">
-        <div class="serve-dot"></div>
-        <span class="team-name-text" id="nameB-txt" onclick="editName('B')">Ortega / Gil</span>
-        <input class="team-name-input" id="nameB-inp" style="display:none" onblur="saveName('B')" onkeydown="nameKey(event,'B')">
-      </div>
-      <div class="score-cell pts" id="ptsB">0</div>
-      <div class="score-cell games" id="gmsB">0</div>
-      <div class="sets-cell" id="setsB"></div>
-    </div>
-  </div>
-
-  <!-- INFO STRIP -->
-  <div class="info-strip" id="info-strip"></div>
-
-  <!-- HISTORY -->
-  <div class="history-card" id="history-card" style="display:none">
-    <div class="history-title">Historial de sets</div>
-    <div class="history-sets" id="history-sets"></div>
-  </div>
-
-  <!-- CONTROLS -->
-  <div class="controls">
-    <div class="score-buttons">
-      <button class="btn-score" id="btnA" onclick="addPoint('A')">
-        <div class="btn-name" id="btn-nameA">Navarro / Sanz</div>
-        <div class="btn-plus">+1</div>
-      </button>
-      <button class="btn-score teamB" id="btnB" onclick="addPoint('B')">
-        <div class="btn-name" id="btn-nameB">Ortega / Gil</div>
-        <div class="btn-plus">+1</div>
-      </button>
-    </div>
-
-    <div class="action-row">
-      <button class="btn-action" onclick="undoPoint()">↩ Deshacer</button>
-      <button class="btn-action" onclick="changeServe()">⇄ Saque</button>
-      <button class="btn-action danger" onclick="confirmReset()">↺ Reiniciar</button>
-    </div>
-
-    <div class="settings-row">
-      <div class="btn-toggle on" id="toggle-oro" onclick="toggleOro()">
-        <span class="lbl">Punto de oro</span>
-        <div class="toggle-pill"></div>
-      </div>
-      <div class="btn-toggle" id="toggle-pista" onclick="openPistaModal()">
-        <span class="lbl" id="pista-lbl">Pista 1</span>
-        <span style="font-size:16px;color:var(--text3)">›</span>
-      </div>
-    </div>
+<!-- SETUP -->
+<div class="setup-overlay" id="setup-overlay">
+  <div class="setup-box">
+    <div class="setup-title">⌚ Mando</div>
+    <div class="setup-sub">Introduce el canal del marcador.<br>Lo encontrarás en Ajustes de la app.</div>
+    <input class="setup-input" id="ch-input" placeholder="padel-xxxxxxxx" autocomplete="off" autocorrect="off" spellcheck="false">
+    <button class="setup-btn" onclick="connectChannel()">Conectar</button>
   </div>
 </div>
 
-<!-- PISTA MODAL -->
-<div class="modal-bg" id="pista-modal" onclick="closePistaModal(event)">
-  <div class="modal">
-    <h2>Seleccionar pista</h2>
-    <div class="modal-options">
-      <div class="modal-opt" onclick="setPista(1)"><span>Pista 1</span><span style="font-size:12px;color:var(--text3)">match_pista_1</span></div>
-      <div class="modal-opt" onclick="setPista(2)"><span>Pista 2</span><span style="font-size:12px;color:var(--text3)">match_pista_2</span></div>
-      <div class="modal-opt" onclick="setPista(3)"><span>Pista 3</span><span style="font-size:12px;color:var(--text3)">match_pista_3</span></div>
+<!-- APP -->
+<div class="app">
+  <div class="status">
+    <div class="status-left">
+      <div class="dot" id="dot"></div>
+      <div class="status-txt" id="stxt">SIN CONEXIÓN</div>
     </div>
-    <button class="modal-close" onclick="closePistaModal()">Cerrar</button>
+    <div class="pista-sel">
+      <button class="ps-btn" data-p="1" onclick="switchPista(1)">P1</button>
+      <button class="ps-btn" data-p="2" onclick="switchPista(2)">P2</button>
+      <button class="ps-btn" data-p="3" onclick="switchPista(3)">P3</button>
+    </div>
   </div>
-</div>
 
-<div id="toast"></div>
+  <div class="score-display" id="score-display">
+    <div class="score-header">
+      <div></div>
+      <div class="col-header">PTS</div>
+      <div class="col-header">J</div>
+      <div class="col-header">S</div>
+    </div>
+    <div class="score-grid">
+      <div class="score-name s1" id="sn1">PAREJA A</div>
+      <div class="score-pts s1" id="spt1">0</div>
+      <div class="score-games" id="sgm1">0</div>
+      <div class="score-sets" id="sst1">0</div>
+    </div>
+    <div class="score-divider"></div>
+    <div class="score-grid">
+      <div class="score-name s2" id="sn2">PAREJA B</div>
+      <div class="score-pts s2" id="spt2">0</div>
+      <div class="score-games" id="sgm2">0</div>
+      <div class="score-sets" id="sst2">0</div>
+    </div>
+    <div class="score-divider"></div>
+    <div class="score-meta" id="score-meta">
+      <div class="score-serve" id="serve-info">— Esperando —</div>
+    </div>
+  </div>
+
+  <div class="action-area">
+    <div class="main-btns">
+      <button class="score-btn b1" id="btn1" onclick="sendPoint(1)">
+        <div class="btn-ico">+1</div>
+        <div class="btn-name" id="btn-nm1">P. A</div>
+        <div class="btn-label">Punto</div>
+      </button>
+      <button class="score-btn b2" id="btn2" onclick="sendPoint(2)">
+        <div class="btn-ico">+1</div>
+        <div class="btn-name" id="btn-nm2">P. B</div>
+        <div class="btn-label">Punto</div>
+      </button>
+    </div>
+    <div class="secondary-btns">
+      <button class="sec-btn" onclick="sendUndo()">
+        <div class="ico">↩</div>
+        <div class="lbl">Deshacer</div>
+      </button>
+      <button class="sec-btn" onclick="showSetup()">
+        <div class="ico">⚙</div>
+        <div class="lbl">Canal</div>
+      </button>
+    </div>
+  </div>
+
+  <div class="feedback" id="fb">— listo —</div>
+</div>
 
 <script>
-// ─── STATE ────────────────────────────────────────────────────────────────────
-let pistaId = 1;
-let history = []; // undo stack
+'use strict';
+const NTFY = 'https://ntfy.sh';
+const PTLBL = ['0','15','30','40'];
+let ch = '', currentPista = 1;
+let evtSrc = null, reconnTimer = null, sending = false;
 let state = null;
-let chronoInterval = null;
 
-function defaultState() {
-  return {
-    nameA: 'Navarro / Sanz',
-    nameB: 'Ortega / Gil',
-    ptsA: 0, ptsB: 0,         // point indices: 0=0,1=15,2=30,3=40,4=AD
-    gmsA: 0, gmsB: 0,
-    setsA: 0, setsB: 0,
-    setHistory: [],            // [{a,b}]
-    serving: 'A',
-    goldPoint: true,
-    tiebreak: false,
-    advantage: null,           // 'A' | 'B' | null
-    finished: false,
-    winner: null,
-    startTime: Date.now(),
-    currentSet: 1
-  };
-}
-
-const POINTS = ['0','15','30','40'];
-
-// ─── PERSISTENCE ─────────────────────────────────────────────────────────────
-function storageKey() { return 'match_pista_' + pistaId; }
-
-function saveState() {
-  localStorage.setItem(storageKey(), JSON.stringify(state));
-  broadcast();
-}
-
-function loadState() {
-  const raw = localStorage.getItem(storageKey());
-  if (raw) {
-    try { state = JSON.parse(raw); return; } catch(e) {}
-  }
-  state = defaultState();
-}
-
-// ─── BROADCAST ────────────────────────────────────────────────────────────────
-let bc = null;
-function initBroadcast() {
-  if (typeof BroadcastChannel !== 'undefined') {
-    if (bc) bc.close();
-    bc = new BroadcastChannel('padel_sync');
-  }
-}
-function broadcast() {
-  if (bc) bc.postMessage({ key: storageKey(), state });
-}
-window.addEventListener('storage', e => {
-  if (e.key === storageKey()) { loadState(); render(); }
-});
-
-// ─── CHRONO ───────────────────────────────────────────────────────────────────
-function startChrono() {
-  if (chronoInterval) clearInterval(chronoInterval);
-  chronoInterval = setInterval(updateChrono, 1000);
-  updateChrono();
-}
-function updateChrono() {
-  if (!state || state.finished) return;
-  const el = document.getElementById('chrono');
-  const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
-  const m = Math.floor(elapsed / 60);
-  const s = elapsed % 60;
-  el.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-}
-
-// ─── POINT DISPLAY ────────────────────────────────────────────────────────────
-function pointLabel(team) {
-  if (state.tiebreak) {
-    return team === 'A' ? state.ptsA : state.ptsB;
-  }
-  if (!state.goldPoint && state.advantage !== null) {
-    if (state.ptsA === 3 && state.ptsB === 3) {
-      if (state.advantage === team) return 'AD';
-      return '40';
-    }
-  }
-  const pts = team === 'A' ? state.ptsA : state.ptsB;
-  return POINTS[Math.min(pts, 3)];
-}
-
-// ─── ADD POINT ────────────────────────────────────────────────────────────────
-function addPoint(team) {
-  if (state.finished) { showToast('Partido finalizado'); return; }
-  history.push(JSON.parse(JSON.stringify(state)));
-  if (history.length > 30) history.shift();
-
-  if (state.tiebreak) {
-    addTiebreakPoint(team);
-  } else {
-    addNormalPoint(team);
-  }
-  saveState();
-  render();
-}
-
-function addNormalPoint(team) {
-  const other = team === 'A' ? 'B' : 'A';
-  const myPts = team === 'A' ? state.ptsA : state.ptsB;
-  const theirPts = team === 'A' ? state.ptsB : state.ptsA;
-
-  if (state.goldPoint) {
-    // Golden point: deuce resolved by next point
-    if (myPts === 3 && theirPts === 3) {
-      winGame(team); return;
-    }
-  } else {
-    // Real advantage
-    if (myPts === 3 && theirPts === 3) {
-      if (state.advantage === null) { state.advantage = team; return; }
-      if (state.advantage === team) { winGame(team); return; }
-      if (state.advantage === other) { state.advantage = null; return; }
-    }
-  }
-
-  if (myPts >= 3 && theirPts < 3) { winGame(team); return; }
-
-  if (team === 'A') state.ptsA++;
-  else state.ptsB++;
-}
-
-function addTiebreakPoint(team) {
-  if (team === 'A') state.ptsA++;
-  else state.ptsB++;
-  if (state.ptsA >= 7 && state.ptsA - state.ptsB >= 2) { winGame('A'); return; }
-  if (state.ptsB >= 7 && state.ptsB - state.ptsA >= 2) { winGame('B'); return; }
-}
-
-function winGame(team) {
-  state.ptsA = 0; state.ptsB = 0;
-  state.advantage = null;
-  state.tiebreak = false;
-  const prevServe = state.serving;
-
-  if (team === 'A') state.gmsA++;
-  else state.gmsB++;
-
-  // Switch serve after tiebreak game
-  if (state.tiebreak) state.serving = state.serving === 'A' ? 'B' : 'A';
-
-  checkSet();
-}
-
-function checkSet() {
-  const a = state.gmsA, b = state.gmsB;
-  let winner = null;
-
-  if ((a === 6 && b <= 4) || (a === 7 && b === 5) || (a === 7 && b === 6)) winner = 'A';
-  if ((b === 6 && a <= 4) || (b === 7 && a === 5) || (b === 7 && a === 6)) winner = 'B';
-
-  if (a === 6 && b === 6 && !state.tiebreak) {
-    state.tiebreak = true;
-    return;
-  }
-
-  if (winner) {
-    state.setHistory.push({ a: state.gmsA, b: state.gmsB });
-    if (winner === 'A') state.setsA++;
-    else state.setsB++;
-    state.gmsA = 0; state.gmsB = 0;
-    state.tiebreak = false;
-    state.currentSet++;
-    state.serving = state.serving === 'A' ? 'B' : 'A';
-
-    if (state.setsA === 2 || state.setsB === 2) {
-      state.finished = true;
-      state.winner = winner;
-    }
-  }
-}
-
-// ─── UNDO ─────────────────────────────────────────────────────────────────────
-function undoPoint() {
-  if (!history.length) { showToast('Nada que deshacer'); return; }
-  state = history.pop();
-  saveState();
-  render();
-  showToast('Acción deshecha');
-}
-
-// ─── SERVE / NAMES / GOLD ─────────────────────────────────────────────────────
-function changeServe() {
-  if (state.finished) return;
-  history.push(JSON.parse(JSON.stringify(state)));
-  state.serving = state.serving === 'A' ? 'B' : 'A';
-  saveState(); render();
-}
-
-function toggleOro() {
-  state.goldPoint = !state.goldPoint;
-  if (state.goldPoint) state.advantage = null;
-  saveState(); render();
-}
-
-function editName(team) {
-  const txt = document.getElementById('name' + team + '-txt');
-  const inp = document.getElementById('name' + team + '-inp');
-  inp.value = team === 'A' ? state.nameA : state.nameB;
-  txt.style.display = 'none';
-  inp.style.display = 'inline-block';
-  inp.focus(); inp.select();
-}
-function saveName(team) {
-  const inp = document.getElementById('name' + team + '-inp');
-  const val = inp.value.trim() || (team === 'A' ? 'Pareja A' : 'Pareja B');
-  if (team === 'A') state.nameA = val;
-  else state.nameB = val;
-  document.getElementById('name' + team + '-txt').style.display = '';
-  inp.style.display = 'none';
-  saveState(); render();
-}
-function nameKey(e, team) {
-  if (e.key === 'Enter') saveName(team);
-  if (e.key === 'Escape') {
-    document.getElementById('name' + team + '-inp').style.display = 'none';
-    document.getElementById('name' + team + '-txt').style.display = '';
-  }
-}
-
-// ─── RESET ────────────────────────────────────────────────────────────────────
-function confirmReset() {
-  if (confirm('¿Reiniciar el partido en esta pista?')) {
-    const nameA = state.nameA, nameB = state.nameB;
-    state = defaultState();
-    state.nameA = nameA; state.nameB = nameB;
-    history = [];
-    saveState(); render();
-    showToast('Partido reiniciado');
-  }
-}
-
-// ─── PISTA MODAL ──────────────────────────────────────────────────────────────
-function openPistaModal() {
-  const opts = document.querySelectorAll('.modal-opt');
-  opts.forEach((o,i) => o.classList.toggle('active', i+1 === pistaId));
-  document.getElementById('pista-modal').classList.add('open');
-}
-function closePistaModal(e) {
-  if (!e || e.target === document.getElementById('pista-modal') || e.type !== 'click' || e.currentTarget !== e.target) {
-    if (e && e.target !== document.getElementById('pista-modal') && e.type === 'click' && e.currentTarget === e.target) return;
-    document.getElementById('pista-modal').classList.remove('open');
-  }
-}
-function setPista(n) {
-  pistaId = n;
-  initBroadcast();
-  loadState();
-  document.getElementById('pista-modal').classList.remove('open');
-  render();
-  showToast('Pista ' + n + ' seleccionada');
-}
-
-// ─── TOAST ────────────────────────────────────────────────────────────────────
-let toastTimer = null;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  if (toastTimer) clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
-}
-
-// ─── RENDER ───────────────────────────────────────────────────────────────────
-function render() {
-  // names
-  document.getElementById('nameA-txt').textContent = state.nameA;
-  document.getElementById('nameB-txt').textContent = state.nameB;
-  document.getElementById('btn-nameA').textContent = state.nameA;
-  document.getElementById('btn-nameB').textContent = state.nameB;
-  document.getElementById('pista-btn').textContent = 'Pista ' + pistaId;
-  document.getElementById('pista-lbl').textContent = 'Pista ' + pistaId;
-
-  // serving
-  document.getElementById('rowA').classList.toggle('serving', state.serving === 'A');
-  document.getElementById('rowB').classList.toggle('serving', state.serving === 'B');
-
-  // points
-  const labelA = pointLabel('A');
-  const labelB = pointLabel('B');
-  const elPA = document.getElementById('ptsA');
-  const elPB = document.getElementById('ptsB');
-  elPA.textContent = labelA;
-  elPB.textContent = labelB;
-
-  const aHead = state.tiebreak ? state.ptsA > state.ptsB : state.ptsA > state.ptsB;
-  elPA.classList.toggle('leading', aHead);
-  elPB.classList.toggle('leading', state.tiebreak ? state.ptsB > state.ptsA : state.ptsB > state.ptsA);
-
-  // games
-  document.getElementById('gmsA').textContent = state.gmsA;
-  document.getElementById('gmsB').textContent = state.gmsB;
-
-  // sets
-  renderSets();
-
-  // info strip
-  renderInfoStrip();
-
-  // history
-  renderHistory();
-
-  // status banner
-  const banner = document.getElementById('status-banner');
-  if (state.finished) {
-    const winner = state.winner === 'A' ? state.nameA : state.nameB;
-    banner.textContent = '🏆 ' + winner + ' gana el partido';
-    banner.classList.add('show');
-    document.getElementById('btnA').disabled = true;
-    document.getElementById('btnB').disabled = true;
-    document.getElementById('btnA').style.opacity = '.4';
-    document.getElementById('btnB').style.opacity = '.4';
-  } else {
-    banner.classList.remove('show');
-    document.getElementById('btnA').disabled = false;
-    document.getElementById('btnB').disabled = false;
-    document.getElementById('btnA').style.opacity = '';
-    document.getElementById('btnB').style.opacity = '';
-  }
-
-  // gold toggle
-  document.getElementById('toggle-oro').classList.toggle('on', state.goldPoint);
-
-  updateChrono();
-}
-
-function renderSets() {
-  const totalSets = 3;
-  ['A','B'].forEach(team => {
-    const container = document.getElementById('sets' + team);
-    container.innerHTML = '';
-    const won = team === 'A' ? state.setsA : state.setsB;
-    for (let i = 0; i < totalSets; i++) {
-      const b = document.createElement('div');
-      b.className = 'set-badge' + (i < won ? ' won' : '');
-      b.textContent = i < won ? '●' : '○';
-      container.appendChild(b);
-    }
-  });
-}
-
-function renderInfoStrip() {
-  const strip = document.getElementById('info-strip');
-  strip.innerHTML = '';
-  const add = (cls, text) => {
-    const b = document.createElement('span');
-    b.className = 'badge ' + cls;
-    b.textContent = text;
-    strip.appendChild(b);
-  };
-  if (state.tiebreak) add('badge-tiebreak', 'Tiebreak');
-  if (!state.goldPoint) add('badge-gold', 'Ventaja real');
-  if (!state.tiebreak && state.goldPoint) add('badge-gold', 'Punto de oro');
-  if (state.advantage) add('badge-adv', 'Ventaja · ' + (state.advantage === 'A' ? state.nameA : state.nameB));
-  const setTxt = 'Set ' + state.currentSet + ' · Mejor de 3';
-  add('', setTxt);
-  // style last badge neutral
-  const last = strip.lastChild;
-  if (last && !last.className.includes('badge-')) {
-    last.style.cssText = 'background:var(--surface2);color:var(--text2);border:1px solid var(--border);padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;';
-  }
-}
-
-function renderHistory() {
-  const card = document.getElementById('history-card');
-  const container = document.getElementById('history-sets');
-  if (!state.setHistory.length) { card.style.display = 'none'; return; }
-  card.style.display = 'block';
-  container.innerHTML = '';
-  state.setHistory.forEach((s, i) => {
-    const div = document.createElement('div');
-    div.className = 'hist-set';
-    const aWon = s.a > s.b;
-    div.innerHTML = `
-      <span class="set-num">S${i+1}</span>
-      <div class="scores">
-        <span class="s-score${aWon?' won':''}">${s.a}</span>
-        <span class="sep">–</span>
-        <span class="s-score${!aWon?' won':''}">${s.b}</span>
-      </div>`;
-    container.appendChild(div);
-  });
-}
-
-// ─── INIT ─────────────────────────────────────────────────────────────────────
 function init() {
-  initBroadcast();
-  loadState();
-  render();
-  startChrono();
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
+  const urlCh = new URLSearchParams(location.search).get('ch');
+  if (urlCh) {
+    ch = urlCh.trim();
+    localStorage.setItem('ag_watch_ch', ch);
+    history.replaceState({}, '', location.pathname);
+  } else {
+    ch = localStorage.getItem('ag_watch_ch') || '';
   }
+  const savedPista = parseInt(localStorage.getItem('ag_watch_pista') || '1');
+  switchPista(savedPista, true);
+  if (ch) { hideSetup(); startConnection(); }
+  else showSetup();
+
+  // Listen via BroadcastChannel too
+  try {
+    const bc = new BroadcastChannel('agpadel');
+    bc.onmessage = e => {
+      if (e.data?.pista === currentPista && e.data?.state) {
+        state = e.data.state;
+        renderState();
+        setStatus('green','EN VIVO');
+      }
+    };
+  } catch(e) {}
+}
+
+function switchPista(p, silent) {
+  currentPista = p;
+  if (!silent) localStorage.setItem('ag_watch_pista', p);
+  document.querySelectorAll('.ps-btn').forEach(b => {
+    b.classList.toggle('active', parseInt(b.dataset.p) === p);
+  });
+  // Try to load from localStorage
+  try {
+    const raw = localStorage.getItem('ag_match_pista_'+p);
+    if (raw) { state = JSON.parse(raw); renderState(); }
+  } catch(e) {}
+}
+
+function showSetup() { document.getElementById('setup-overlay').classList.remove('hidden'); }
+function hideSetup() { document.getElementById('setup-overlay').classList.add('hidden'); }
+
+function connectChannel() {
+  const v = document.getElementById('ch-input').value.trim().toLowerCase();
+  if (!v) return;
+  ch = v; localStorage.setItem('ag_watch_ch', ch);
+  hideSetup(); startConnection();
+}
+
+function startConnection() {
+  setStatus('yellow','CONECTANDO');
+  clearTimeout(reconnTimer);
+  if (evtSrc) { try{evtSrc.close();}catch(e){} }
+  evtSrc = new EventSource(`${NTFY}/${ch}-state/sse`);
+  evtSrc.onopen = () => setStatus('green','EN VIVO');
+  evtSrc.addEventListener('message', e => {
+    try {
+      const env = JSON.parse(e.data);
+      const msg = typeof env.message==='string' ? env.message : JSON.stringify(env);
+      const d = JSON.parse(msg);
+      if (d?.pts) { state=d; renderState(); setStatus('green','EN VIVO'); }
+    } catch(err) {}
+  });
+  evtSrc.onerror = () => {
+    setStatus('red','SIN SEÑAL');
+    try{evtSrc.close();}catch(e){}
+    evtSrc=null;
+    reconnTimer=setTimeout(startConnection,4000);
+  };
+}
+
+async function sendPoint(team) {
+  if (sending) return;
+  sending = true;
+  setFb('Enviando...','');
+  try {
+    const r = await fetch(`${NTFY}/${ch}`,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain','Title':'punto'},
+      body:String(team)
+    });
+    setFb(r.ok ? '✓ Punto anotado' : '✗ Error '+r.status, r.ok?'ok':'err');
+  } catch(e) { setFb('✗ Sin red','err'); }
+  sending = false;
+}
+
+async function sendUndo() {
+  setFb('Deshaciendo...','');
+  try {
+    const r = await fetch(`${NTFY}/${ch}`,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain','Title':'punto'},
+      body:'undo'
+    });
+    setFb(r.ok?'↩ Deshecho':'✗ Error','ok');
+  } catch(e) { setFb('✗ Sin red','err'); }
+}
+
+function renderState() {
+  if (!state) return;
+  const p=state.pts||[0,0], g=state.games||[0,0], s=state.sets||[0,0];
+  const n=state.names||['PAREJA A','PAREJA B'];
+  const tb=state.tiebreak, gld=state.gold;
+  const adv0=!gld&&p[0]===4, adv1=!gld&&p[1]===4;
+  const isGold=gld&&p[0]===3&&p[1]===3;
+
+  document.getElementById('sn1').textContent = n[0];
+  document.getElementById('sn2').textContent = n[1];
+  document.getElementById('btn-nm1').textContent = n[0].split(' / ')[0] || n[0];
+  document.getElementById('btn-nm2').textContent = n[1].split(' / ')[0] || n[1];
+
+  if (tb) {
+    document.getElementById('spt1').textContent = p[0];
+    document.getElementById('spt2').textContent = p[1];
+  } else {
+    document.getElementById('spt1').textContent = isGold?'🥇':adv0?'AD':adv1?'–':(PTLBL[p[0]]||'0');
+    document.getElementById('spt2').textContent = isGold?'🥇':adv1?'AD':adv0?'–':(PTLBL[p[1]]||'0');
+  }
+  document.getElementById('sgm1').textContent = g[0];
+  document.getElementById('sgm2').textContent = g[1];
+  document.getElementById('sst1').textContent = s[0];
+  document.getElementById('sst2').textContent = s[1];
+
+  // Meta badges
+  let meta = '';
+  if (tb) meta += '<span class="score-badge badge-tb">TIEBREAK</span>';
+  else if (isGold) meta += '<span class="score-badge badge-gold">🥇 ORO</span>';
+  else if (adv0||adv1) meta += '<span class="score-badge badge-adv">VENTAJA</span>';
+  if (state.server) meta += `<span class="score-serve">🎾 Saca ${(n[state.server-1]||'').split(' / ')[0]}</span>`;
+  document.getElementById('score-meta').innerHTML = meta || '<span class="score-serve">— —</span>';
+
+  if (state.matchOver) setStatus('yellow','PARTIDO FIN');
+}
+
+function setStatus(color, txt) {
+  const dot=document.getElementById('dot');
+  dot.className='dot'+(color==='green'?' green':color==='red'?' red':color==='yellow'?' yellow':'');
+  document.getElementById('stxt').textContent=txt;
+}
+
+let fbT;
+function setFb(msg,cls) {
+  clearTimeout(fbT);
+  const el=document.getElementById('fb');
+  el.textContent=msg; el.className='feedback'+(cls?' '+cls:'');
+  fbT=setTimeout(()=>{ el.textContent='— listo —'; el.className='feedback'; },2000);
 }
 
 init();
