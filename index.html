@@ -427,21 +427,27 @@
     }
 
     function winGame(team) {
-      state.games[team] += 1;
-      state.points = [0,0];
 
-      const a = state.games[0];
-      const b = state.games[1];
+  state.games[team] += 1;
 
-      if ((a >= 6 || b >= 6) && Math.abs(a - b) >= 2) {
-        awardSet(team);
-        return;
-      }
+  // cambio automático de saque cada juego
+  state.server = state.server === 0 ? 1 : 0;
 
-      if (a === 6 && b === 6) {
-        state.inTiebreak = true;
-      }
-    }
+  state.points = [0,0];
+
+  const a = state.games[0];
+  const b = state.games[1];
+
+  if ((a >= 6 || b >= 6) && Math.abs(a - b) >= 2) {
+    awardSet(team);
+    return;
+  }
+
+  if (a === 6 && b === 6) {
+    state.inTiebreak = true;
+  }
+
+}
 
     function handleNormalPoint(team) {
       const other = 1 - team;
