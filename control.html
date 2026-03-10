@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1a3a5c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Control · Pádel</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{
+  --bg:#1a3a5c;
+  --surface:#1f4470;
+  --surface2:#162f4a;
+  --border:rgba(255,255,255,.12);
+  --text:#ffffff;
+  --text2:rgba(255,255,255,.7);
+  --text3:rgba(255,255,255,.4);
+  --gold:#c8a84b;
+  --green:#3d8b68;
+  --red:#e05555;
+  --radius:16px;
+  --radius-sm:10px;
+  font-family:'Helvetica Neue',Helvetica,Arial,system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;background:var(--bg);color:var(--text);overscroll-behavior:none;}
+
+/* HEADER */
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;
+  border-bottom:1px solid var(--border);
+}
+.hd-title{font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;opacity:.6;}
+.hd-pista{
+  font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  background:rgba(255,255,255,.1);padding:5px 14px;border-radius:20px;
+  cursor:pointer;border:1px solid var(--border);transition:background .15s;
+}
+.hd-pista:hover{background:rgba(255,255,255,.18);}
+.hd-chrono{
+  font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;
+  opacity:.6;letter-spacing:1px;
+}
+
+/* SCOREBOARD COMPACT */
+.score-panel{
+  background:var(--surface2);
+  margin:12px;border-radius:var(--radius);
+  padding:14px;border:1px solid var(--border);
+}
+.sp-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 0;
+}
+.sp-row+.sp-row{border-top:1px solid var(--border);}
+.sp-left{display:flex;align-items:center;gap:10px;}
+.sp-serve{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--gold);flex-shrink:0;
+  box-shadow:0 0 8px rgba(200,168,75,.7);
+  visibility:hidden;
+}
+.sp-serve.vis{visibility:visible;}
+.sp-name{font-size:14px;font-weight:700;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sp-right{display:flex;align-items:center;gap:12px;}
+.sp-pts{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums;min-width:42px;text-align:right;}
+.sp-pts.lead{color:var(--gold);}
+.sp-gms{font-size:16px;font-weight:600;opacity:.55;font-variant-numeric:tabular-nums;min-width:22px;text-align:right;}
+.sp-sets{display:flex;gap:4px;}
+.sp-set{
+  width:20px;height:20px;border-radius:4px;
+  border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:800;opacity:.45;
+}
+.sp-set.won{background:var(--gold);border-color:var(--gold);color:#fff;opacity:1;}
+
+/* BADGES */
+.badges{
+  display:flex;gap:6px;flex-wrap:wrap;
+  padding:0 12px 10px;
+}
+.bdg{
+  padding:4px 10px;border-radius:20px;
+  font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+}
+.bdg-tb{background:rgba(224,85,85,.2);color:#e08888;border:1px solid rgba(224,85,85,.3);}
+.bdg-adv{background:rgba(61,139,104,.2);color:#6dbf98;border:1px solid rgba(61,139,104,.3);}
+.bdg-oro{background:rgba(200,168,75,.15);color:#d4aa52;border:1px solid rgba(200,168,75,.3);}
+.bdg-fin{background:var(--gold);color:#fff;border:1px solid var(--gold);}
+
+/* BIG SCORE BUTTONS */
+.score-buttons{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:10px;padding:0 12px 10px;
+  flex:1;
+}
+.btn-score{
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:var(--radius);
+  padding:0;cursor:pointer;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  color:var(--text);
+  transition:background .12s,transform .1s,box-shadow .12s;
+  box-shadow:0 2px 12px rgba(0,0,0,.2);
+  min-height:140px;
+}
+.btn-score:active{transform:scale(.96);box-shadow:0 1px 4px rgba(0,0,0,.2);}
+.btn-score:hover{background:#245280;}
+.btn-score.teamA{border-top:3px solid var(--gold);}
+.btn-score.teamB{border-top:3px solid var(--green);}
+.btn-score .bname{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;opacity:.6;text-align:center;padding:0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
+.btn-score .bplus{font-size:48px;font-weight:900;line-height:1;}
+.btn-score.disabled{opacity:.35;pointer-events:none;}
+
+/* ACTION ROW */
+.action-row{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  gap:8px;padding:0 12px 14px;
+}
+.btn-action{
+  background:rgba(255,255,255,.07);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:14px 6px;
+  color:var(--text2);cursor:pointer;
+  font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;
+  text-align:center;transition:all .15s;
+}
+.btn-action:active{transform:scale(.96);}
+.btn-action:hover{background:rgba(255,255,255,.13);}
+.btn-action.danger{color:var(--red);border-color:rgba(224,85,85,.3);}
+.btn-icon{font-size:20px;display:block;margin-bottom:4px;}
+
+/* PISTA MODAL */
+.modal-bg{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.6);backdrop-filter:blur(4px);
+  z-index:500;align-items:flex-end;justify-content:center;
+}
+.modal-bg.open{display:flex;}
+.modal{
+  background:#1f3d58;border-radius:16px 16px 0 0;
+  padding:22px 18px 30px;width:100%;max-width:480px;
+}
+.modal h2{font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;opacity:.6;margin-bottom:14px;}
+.modal-options{display:flex;flex-direction:column;gap:8px;}
+.modal-opt{
+  background:rgba(255,255,255,.07);border:1px solid var(--border);
+  border-radius:10px;padding:14px 16px;
+  cursor:pointer;font-size:14px;font-weight:700;color:var(--text);
+  transition:all .15s;display:flex;align-items:center;justify-content:space-between;
+}
+.modal-opt:hover{background:rgba(255,255,255,.13);}
+.modal-opt.active{background:var(--gold);border-color:var(--gold);}
+.modal-close{margin-top:12px;width:100%;padding:14px;border:none;border-radius:10px;background:rgba(255,255,255,.08);color:var(--text2);cursor:pointer;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;}
+
+/* LAYOUT */
+.page{display:flex;flex-direction:column;height:100vh;max-width:480px;margin:0 auto;}
+.flex-fill{flex:1;display:flex;flex-direction:column;justify-content:space-between;padding-top:4px;}
+
+/* TOAST */
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(16px);background:rgba(255,255,255,.15);backdrop-filter:blur(8px);color:#fff;padding:9px 20px;border-radius:20px;font-size:12px;font-weight:700;opacity:0;transition:all .3s;pointer-events:none;z-index:999;white-space:nowrap;border:1px solid rgba(255,255,255,.2);}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="hd-title">Control Remoto</div>
+    <div class="hd-pista" id="pista-btn" onclick="openPistaModal()">Pista 1</div>
+    <div class="hd-chrono" id="chrono">00:00</div>
+  </header>
+
+  <div class="score-panel">
+    <div class="sp-row">
+      <div class="sp-left">
+        <div class="sp-serve" id="serveA"></div>
+        <div class="sp-name" id="nameA">—</div>
+      </div>
+      <div class="sp-right">
+        <div class="sp-sets" id="setsA"></div>
+        <div class="sp-gms" id="gmsA">0</div>
+        <div class="sp-pts" id="ptsA">0</div>
+      </div>
+    </div>
+    <div class="sp-row">
+      <div class="sp-left">
+        <div class="sp-serve" id="serveB"></div>
+        <div class="sp-name" id="nameB">—</div>
+      </div>
+      <div class="sp-right">
+        <div class="sp-sets" id="setsB"></div>
+        <div class="sp-gms" id="gmsB">0</div>
+        <div class="sp-pts" id="ptsB">0</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="badges" id="badges"></div>
+
+  <div class="flex-fill">
+    <div class="score-buttons">
+      <button class="btn-score teamA" id="btnA" onclick="addPoint('A')">
+        <span class="bname" id="btn-nameA">Pareja A</span>
+        <span class="bplus">+1</span>
+      </button>
+      <button class="btn-score teamB" id="btnB" onclick="addPoint('B')">
+        <span class="bname" id="btn-nameB">Pareja B</span>
+        <span class="bplus">+1</span>
+      </button>
+    </div>
+
+    <div class="action-row">
+      <button class="btn-action" onclick="undoPoint()">
+        <span class="btn-icon">↩</span>Deshacer
+      </button>
+      <button class="btn-action" onclick="changeServe()">
+        <span class="btn-icon">⇄</span>Saque
+      </button>
+      <button class="btn-action danger" onclick="confirmReset()">
+        <span class="btn-icon">↺</span>Reiniciar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- PISTA MODAL -->
+<div class="modal-bg" id="pista-modal" onclick="closePistaOnBg(event)">
+  <div class="modal">
+    <h2>Seleccionar pista</h2>
+    <div class="modal-options">
+      <div class="modal-opt" onclick="setPista(1)"><span>Pista 1</span></div>
+      <div class="modal-opt" onclick="setPista(2)"><span>Pista 2</span></div>
+      <div class="modal-opt" onclick="setPista(3)"><span>Pista 3</span></div>
+    </div>
+    <button class="modal-close" onclick="document.getElementById('pista-modal').classList.remove('open')">Cerrar</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let pistaId = 1;
+let state = null;
+let chronoInterval = null;
+let undoHistory = [];
+
+const POINTS = ['0','15','30','40'];
+
+function defaultState() {
+  return {
+    nameA:'Pareja A',nameB:'Pareja B',
+    ptsA:0,ptsB:0,gmsA:0,gmsB:0,setsA:0,setsB:0,
+    setHistory:[],serving:'A',goldPoint:true,
+    tiebreak:false,advantage:null,
+    finished:false,winner:null,
+    startTime:Date.now(),currentSet:1
+  };
+}
+
+function storageKey(){return 'match_pista_'+pistaId;}
+
+function saveState(){
+  localStorage.setItem(storageKey(),JSON.stringify(state));
+  broadcast();
+}
+function loadState(){
+  const raw=localStorage.getItem(storageKey());
+  if(raw){try{state=JSON.parse(raw);return;}catch(e){}}
+  state=defaultState();
+}
+
+// ─── BROADCAST ────────────────────────────────────────────────────────────────
+let bc=null;
+function initBC(){
+  if(typeof BroadcastChannel!=='undefined'){
+    if(bc)bc.close();
+    bc=new BroadcastChannel('padel_sync');
+    bc.onmessage=e=>{if(e.data&&e.data.key===storageKey()){loadState();render();}};
+  }
+}
+function broadcast(){if(bc)bc.postMessage({key:storageKey(),state});}
+window.addEventListener('storage',e=>{if(e.key===storageKey()){loadState();render();}});
+
+// ─── CHRONO ───────────────────────────────────────────────────────────────────
+function startChrono(){
+  if(chronoInterval)clearInterval(chronoInterval);
+  chronoInterval=setInterval(updateChrono,1000);
+  updateChrono();
+}
+function updateChrono(){
+  if(!state)return;
+  const el=document.getElementById('chrono');
+  const elapsed=Math.floor((Date.now()-state.startTime)/1000);
+  const m=Math.floor(elapsed/60);
+  const s=elapsed%60;
+  el.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+
+// ─── POINT LOGIC ─────────────────────────────────────────────────────────────
+function pointLabel(team){
+  if(state.tiebreak)return team==='A'?state.ptsA:state.ptsB;
+  if(!state.goldPoint&&state.advantage!==null){
+    if(state.ptsA===3&&state.ptsB===3){
+      if(state.advantage===team)return 'AD';
+      return '40';
+    }
+  }
+  const pts=team==='A'?state.ptsA:state.ptsB;
+  return POINTS[Math.min(pts,3)];
+}
+
+function addPoint(team){
+  if(state.finished){showToast('Partido finalizado');return;}
+  undoHistory.push(JSON.parse(JSON.stringify(state)));
+  if(undoHistory.length>30)undoHistory.shift();
+  if(state.tiebreak)addTBPoint(team);
+  else addNormalPoint(team);
+  saveState();render();
+}
+
+function addNormalPoint(team){
+  const other=team==='A'?'B':'A';
+  const my=team==='A'?state.ptsA:state.ptsB;
+  const their=team==='A'?state.ptsB:state.ptsA;
+  if(state.goldPoint){
+    if(my===3&&their===3){winGame(team);return;}
+  } else {
+    if(my===3&&their===3){
+      if(state.advantage===null){state.advantage=team;return;}
+      if(state.advantage===team){winGame(team);return;}
+      if(state.advantage===other){state.advantage=null;return;}
+    }
+  }
+  if(my>=3&&their<3){winGame(team);return;}
+  if(team==='A')state.ptsA++;else state.ptsB++;
+}
+
+function addTBPoint(team){
+  if(team==='A')state.ptsA++;else state.ptsB++;
+  if(state.ptsA>=7&&state.ptsA-state.ptsB>=2){winGame('A');return;}
+  if(state.ptsB>=7&&state.ptsB-state.ptsA>=2){winGame('B');return;}
+}
+
+function winGame(team){
+  state.ptsA=0;state.ptsB=0;state.advantage=null;
+  if(state.tiebreak)state.serving=state.serving==='A'?'B':'A';
+  state.tiebreak=false;
+  if(team==='A')state.gmsA++;else state.gmsB++;
+  checkSet();
+}
+
+function checkSet(){
+  const a=state.gmsA,b=state.gmsB;
+  let winner=null;
+  if((a===6&&b<=4)||(a===7&&b===5)||(a===7&&b===6))winner='A';
+  if((b===6&&a<=4)||(b===7&&a===5)||(b===7&&a===6))winner='B';
+  if(a===6&&b===6&&!state.tiebreak){state.tiebreak=true;return;}
+  if(winner){
+    state.setHistory.push({a:state.gmsA,b:state.gmsB});
+    if(winner==='A')state.setsA++;else state.setsB++;
+    state.gmsA=0;state.gmsB=0;state.tiebreak=false;
+    state.currentSet++;
+    state.serving=state.serving==='A'?'B':'A';
+    if(state.setsA===2||state.setsB===2){state.finished=true;state.winner=winner;}
+  }
+}
+
+function undoPoint(){
+  if(!undoHistory.length){showToast('Nada que deshacer');return;}
+  state=undoHistory.pop();
+  saveState();render();
+  showToast('Acción deshecha');
+}
+
+function changeServe(){
+  if(state.finished)return;
+  undoHistory.push(JSON.parse(JSON.stringify(state)));
+  state.serving=state.serving==='A'?'B':'A';
+  saveState();render();
+}
+
+function confirmReset(){
+  if(confirm('¿Reiniciar el partido?')){
+    const nA=state.nameA,nB=state.nameB;
+    state=defaultState();
+    state.nameA=nA;state.nameB=nB;
+    undoHistory=[];
+    saveState();render();
+    showToast('Partido reiniciado');
+  }
+}
+
+// ─── PISTA ────────────────────────────────────────────────────────────────────
+function openPistaModal(){
+  const opts=document.querySelectorAll('.modal-opt');
+  opts.forEach((o,i)=>o.classList.toggle('active',i+1===pistaId));
+  document.getElementById('pista-modal').classList.add('open');
+}
+function closePistaOnBg(e){
+  if(e.target===document.getElementById('pista-modal'))
+    document.getElementById('pista-modal').classList.remove('open');
+}
+function setPista(n){
+  pistaId=n;initBC();loadState();undoHistory=[];
+  document.getElementById('pista-modal').classList.remove('open');
+  render();showToast('Pista '+n);
+}
+
+// ─── TOAST ────────────────────────────────────────────────────────────────────
+let tt=null;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  if(tt)clearTimeout(tt);
+  tt=setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+function render(){
+  document.getElementById('nameA').textContent=state.nameA;
+  document.getElementById('nameB').textContent=state.nameB;
+  document.getElementById('btn-nameA').textContent=state.nameA;
+  document.getElementById('btn-nameB').textContent=state.nameB;
+  document.getElementById('pista-btn').textContent='Pista '+pistaId;
+
+  document.getElementById('serveA').classList.toggle('vis',state.serving==='A');
+  document.getElementById('serveB').classList.toggle('vis',state.serving==='B');
+
+  const lA=pointLabel('A'),lB=pointLabel('B');
+  const pA=document.getElementById('ptsA'),pB=document.getElementById('ptsB');
+  pA.textContent=lA;pB.textContent=lB;
+  const aLead=state.tiebreak?state.ptsA>state.ptsB:state.ptsA>state.ptsB;
+  pA.classList.toggle('lead',aLead);
+  pB.classList.toggle('lead',state.tiebreak?state.ptsB>state.ptsA:state.ptsB>state.ptsA);
+
+  document.getElementById('gmsA').textContent=state.gmsA;
+  document.getElementById('gmsB').textContent=state.gmsB;
+
+  // sets
+  ['A','B'].forEach(t=>{
+    const c=document.getElementById('sets'+t);c.innerHTML='';
+    const won=t==='A'?state.setsA:state.setsB;
+    for(let i=0;i<3;i++){
+      const d=document.createElement('div');
+      d.className='sp-set'+(i<won?' won':'');
+      d.textContent=i<won?'●':'○';
+      c.appendChild(d);
+    }
+  });
+
+  // badges
+  const bd=document.getElementById('badges');bd.innerHTML='';
+  const add=(cls,txt)=>{const s=document.createElement('span');s.className='bdg '+cls;s.textContent=txt;bd.appendChild(s);};
+  if(state.finished)add('bdg-fin','🏆 Finalizado');
+  if(state.tiebreak)add('bdg-tb','Tiebreak');
+  if(state.advantage)add('bdg-adv','Ventaja: '+(state.advantage==='A'?state.nameA:state.nameB));
+  if(!state.tiebreak&&state.goldPoint&&!state.finished)add('bdg-oro','Punto de oro');
+
+  // buttons
+  const fin=state.finished;
+  document.getElementById('btnA').classList.toggle('disabled',fin);
+  document.getElementById('btnB').classList.toggle('disabled',fin);
+
+  updateChrono();
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+initBC();
+loadState();
+render();
+startChrono();
+if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
